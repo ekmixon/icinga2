@@ -586,13 +586,17 @@ Array::Ptr LegacyTimePeriod::ScriptFunc(const TimePeriod::Ptr& tp, double begin,
 	Dictionary::Ptr ranges = tp->GetRanges();
 
 	if (ranges) {
-		for (int i = 0; i <= (end - begin) / (24 * 60 * 60); i++) {
-			time_t refts = begin + i * 24 * 60 * 60;
-			tm reference = Utility::LocalTime(refts);
+		tm tm_begin = Utility::LocalTime(begin);
+		tm_begin.tm_hour = 0;
+		tm_begin.tm_min = 0;
+		tm_begin.tm_sec = 0;
+		tm_begin.tm_isdst = -1;
+
+		for (tm reference = tm_begin; mktime_const(&reference) <= end; reference.tm_mday++) {
 
 #ifdef I2_DEBUG
 			Log(LogDebug, "LegacyTimePeriod")
-				<< "Checking reference time " << refts;
+				<< "Checking reference time " << mktime_const(&reference);
 #endif /* I2_DEBUG */
 
 			ObjectLock olock(ranges);
