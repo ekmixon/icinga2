@@ -40,12 +40,9 @@ class IcingaMutexPrinter:
       self.val = val
 
     def to_string(self):
-      owner = self.val['__data']['__owner']
+        owner = self.val['__data']['__owner']
 
-      if owner == 0:
-          return '<unlocked>'
-      else:
-          return '<locked by #' + str(owner) + '>'
+        return '<unlocked>' if owner == 0 else f'<locked by #{str(owner)}>'
 
 def lookup_icinga_type(val):
     t = val.type.unqualified()
